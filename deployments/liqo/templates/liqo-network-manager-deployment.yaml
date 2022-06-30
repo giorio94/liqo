@@ -1,4 +1,4 @@
----
+{{- if eq "liqo" .Values.networkConfig.mode }}
 {{- $netManagerConfig := (merge (dict "name" "network-manager" "module" "networking") .) -}}
 
 apiVersion: apps/v1
@@ -60,3 +60,4 @@ spec:
             requests:
               cpu: 50m
               memory: 50M
+{{- end }}

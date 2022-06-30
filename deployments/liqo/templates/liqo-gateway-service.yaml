@@ -1,4 +1,4 @@
----
+{{- if eq "liqo" .Values.networkConfig.mode }}
 {{- $gatewayConfig := (merge (dict "name" "gateway" "module" "networking") .) -}}
 
 apiVersion: v1
@@ -21,3 +21,4 @@ spec:
       protocol: UDP
   selector:
     {{- include "liqo.gatewaySelector" $gatewayConfig | nindent 4 }}
+{{- end }}

@@ -1,4 +1,4 @@
----
+{{- if eq "liqo" .Values.networkConfig.mode }}
 {{- $proxyConfig := (merge (dict "name" "proxy" "module" "networking") .) -}}
 
 apiVersion: v1
@@ -73,3 +73,4 @@ data:
                        socket_address:
                          address: kubernetes.default
                          port_value: 443
+{{- end }}

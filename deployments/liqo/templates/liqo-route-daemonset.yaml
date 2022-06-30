@@ -1,4 +1,4 @@
----
+{{- if eq "liqo" .Values.networkConfig.mode }}
 {{- $routeConfig := (merge (dict "name" "route" "module" "networking") .) -}}
 
 apiVersion: apps/v1
@@ -80,3 +80,4 @@ spec:
             path: /run/xtables.lock
             type: FileOrCreate
           name: xtables-lock
+{{- end }}

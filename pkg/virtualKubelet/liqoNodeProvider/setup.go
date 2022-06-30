@@ -57,6 +57,8 @@ type InitConfig struct {
 	PodProviderStopper   chan struct{}
 	InformerResyncPeriod time.Duration
 	PingDisabled         bool
+
+	NetworkMode string
 }
 
 // NewLiqoNodeProvider creates and returns a new LiqoNodeProvider.
@@ -70,7 +72,9 @@ func NewLiqoNodeProvider(cfg *InitConfig) *LiqoNodeProvider {
 		terminating:       false,
 		lastAppliedLabels: map[string]string{},
 
-		networkReady: false,
+		networkMode:  cfg.NetworkMode,
+		networkReady: cfg.NetworkMode != "liqo",
+
 		resyncPeriod: cfg.InformerResyncPeriod,
 		pingDisabled: cfg.PingDisabled,
 

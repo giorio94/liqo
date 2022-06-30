@@ -42,6 +42,7 @@ type LiqoNodeProvider struct {
 	resyncPeriod     time.Duration
 	pingDisabled     bool
 
+	networkMode  string
 	networkReady bool
 
 	onNodeChangeCallback func(*corev1.Node)

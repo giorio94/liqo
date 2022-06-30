@@ -92,6 +92,7 @@ func main() {
 	var nodeExtraAnnotations, nodeExtraLabels argsutils.StringMap
 	var kubeletCPURequests, kubeletCPULimits = argsutils.NewQuantity("250m"), argsutils.NewQuantity("1000m")
 	var kubeletRAMRequests, kubeletRAMLimits = argsutils.NewQuantity("100M"), argsutils.NewQuantity("250M")
+	var networkMode = argsutils.NewEnum([]string{"liqo", "cilium"}, "liqo")
 
 	webhookPort := flag.Uint("webhook-port", 9443, "The port the webhook server binds to")
 	metricsAddr := flag.String("metrics-address", ":8080", "The address the metric endpoint binds to")
@@ -107,6 +108,7 @@ func main() {
 		"Name of the namespace where the liqo components are running")
 	foreignClusterWorkers := flag.Uint("foreign-cluster-workers", 1, "The number of workers used to reconcile ForeignCluster resources.")
 	shadowPodWorkers := flag.Int("shadow-pod-ctrl-workers", 10, "The number of workers used to reconcile ShadowPod resources.")
+	flag.Var(networkMode, "network-mode", "The network mode used to interconnect the clusters.")
 
 	// Discovery parameters
 	authServiceAddressOverride := flag.String(consts.AuthServiceAddressOverrideParameter, "",
@@ -234,6 +236,7 @@ func main() {
 		AuthServiceAddressOverride: *authServiceAddressOverride,
 		AuthServicePortOverride:    *authServicePortOverride,
 		AutoJoin:                   *autoJoin,
+		NetworkMode:                networkMode.Value,
 
 		NamespaceManager:  namespaceManager,
 		IdentityManager:   idManager,
@@ -290,6 +293,7 @@ func main() {
 		RequestsRAM:           kubeletRAMRequests.Quantity,
 		LimitsCPU:             kubeletCPULimits.Quantity,
 		LimitsRAM:             kubeletRAMLimits.Quantity,
+		NetworkMode:           networkMode.Value,
 	}
 
 	resourceOfferReconciler := resourceoffercontroller.NewResourceOfferController(

@@ -123,6 +123,7 @@ func forgeVKContainers(
 		stringifyArgument("--tenant-namespace", vkNamespace),
 		stringifyArgument("--home-cluster-id", homeCluster.ClusterID),
 		stringifyArgument("--home-cluster-name", homeCluster.ClusterName),
+		stringifyArgument("--network-mode", opts.NetworkMode),
 		stringifyArgument("--ipam-server",
 			fmt.Sprintf("%v.%v:%v", liqoconst.NetworkManagerServiceName, liqoNamespace, liqoconst.NetworkManagerIpamPort)),
 	}

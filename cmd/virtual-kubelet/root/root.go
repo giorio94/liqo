@@ -109,6 +109,8 @@ func runRootCommand(ctx context.Context, c *Opts) error {
 		EnableStorage:              c.EnableStorage,
 		VirtualStorageClassName:    c.VirtualStorageClassName,
 		RemoteRealStorageClassName: c.RemoteRealStorageClassName,
+
+		NetworkMode: c.NetworkMode.Value,
 	}
 
 	eb := record.NewBroadcaster()
@@ -136,6 +138,8 @@ func runRootCommand(ctx context.Context, c *Opts) error {
 
 		InformerResyncPeriod: c.InformerResyncPeriod,
 		PingDisabled:         c.NodePingInterval == 0,
+
+		NetworkMode: c.NetworkMode.Value,
 	}
 
 	nodeProvider := nodeprovider.NewLiqoNodeProvider(&nodecfg)

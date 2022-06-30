@@ -1,4 +1,4 @@
----
+{{- if eq "liqo" .Values.networkConfig.mode }}
 {{- $proxyConfig := (merge (dict "name" "proxy" "module" "networking") .) -}}
 
 apiVersion: apps/v1
@@ -46,3 +46,4 @@ spec:
       - name: config-volume
         configMap:
           name: {{ include "liqo.prefixedName" $proxyConfig }}
+{{- end }}

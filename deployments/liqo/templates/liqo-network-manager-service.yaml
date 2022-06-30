@@ -1,4 +1,4 @@
----
+{{- if eq "liqo" .Values.networkConfig.mode }}
 {{- $netManagerConfig := (merge (dict "name" "network-manager" "module" "networking") .) -}}
 
 apiVersion: v1
@@ -16,3 +16,4 @@ spec:
       protocol: TCP
   selector:
     {{- include "liqo.selectorLabels" $netManagerConfig | nindent 4 }}
+{{- end }}

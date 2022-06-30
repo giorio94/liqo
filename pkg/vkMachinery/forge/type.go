@@ -38,4 +38,5 @@ type VirtualKubeletOpts struct {
 	LimitsCPU             resource.Quantity
 	RequestsRAM           resource.Quantity
 	LimitsRAM             resource.Quantity
+	NetworkMode           string
 }

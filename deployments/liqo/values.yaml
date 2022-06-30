@@ -277,6 +277,9 @@ openshiftConfig:
 
 # configuration for liqo networking
 networkConfig:
+  # Alternatives: liqo, cilium
+  mode: liqo
+
   # -- set the mtu for the interfaces managed by liqo: vxlan, tunnel and veth interfaces
   # The value is used by the gateway and route operators.
   # The default value is configured to ensure correct functioning regardless of the combination of the underlying environments

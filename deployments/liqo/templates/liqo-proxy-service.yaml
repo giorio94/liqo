@@ -1,4 +1,4 @@
----
+{{- if eq "liqo" .Values.networkConfig.mode }}
 {{- $proxyConfig := (merge (dict "name" "proxy" "module" "networking") .) -}}
 
 apiVersion: v1
@@ -20,3 +20,4 @@ spec:
       protocol: TCP
   selector:
     {{- include "liqo.selectorLabels" $proxyConfig | nindent 4 }}
+{{- end }}

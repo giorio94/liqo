@@ -92,6 +92,7 @@ type ForeignClusterReconciler struct {
 	AuthServiceAddressOverride string
 	AuthServicePortOverride    string
 	AutoJoin                   bool
+	NetworkMode                string
 
 	NamespaceManager tenantnamespace.Manager
 	IdentityManager  identitymanager.IdentityManager
@@ -484,6 +485,13 @@ func getPeeringPhase(foreignCluster *discoveryv1alpha1.ForeignCluster,
 
 func (r *ForeignClusterReconciler) checkTEP(ctx context.Context,
 	foreignCluster *discoveryv1alpha1.ForeignCluster) error {
+	if r.NetworkMode != "liqo" {
+		peeringconditionsutils.EnsureStatus(foreignCluster,
+			discoveryv1alpha1.NetworkStatusCondition, discoveryv1alpha1.PeeringConditionStatusNone,
+			"ExternallyManaged", fmt.Sprintf("Inter-cluster network mode is set to %v", r.NetworkMode))
+		return nil
+	}
+
 	var tepList netv1alpha1.TunnelEndpointList
 	if err := r.Client.List(ctx, &tepList, client.MatchingLabels{
 		liqoconst.ClusterIDLabelName: foreignCluster.Spec.ClusterIdentity.ClusterID,

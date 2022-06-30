@@ -84,6 +84,8 @@ type Opts struct {
 	EnableStorage              bool
 	VirtualStorageClassName    string
 	RemoteRealStorageClassName string
+
+	NetworkMode argsutils.StringEnum
 }
 
 // NewOpts returns an Opts struct with the default values set.
@@ -111,5 +113,7 @@ func NewOpts() *Opts {
 		NodeLeaseDuration: node.DefaultLeaseDuration * time.Second,
 		NodePingInterval:  node.DefaultPingInterval,
 		NodePingTimeout:   DefaultNodePingTimeout,
+
+		NetworkMode: *argsutils.NewEnum([]string{"liqo", "cilium"}, "liqo"),
 	}
 }

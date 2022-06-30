@@ -65,6 +65,7 @@ spec:
           - --auto-join-discovered-clusters={{ .Values.discovery.config.autojoin }}
           - --enable-storage={{ .Values.storage.enable }}
           - --webhook-port={{ .Values.webhook.port }}
+          - --network-mode={{ .Values.networkConfig.mode }}
           {{- if .Values.storage.enable }}
           - --virtual-storage-class-name={{ .Values.storage.virtualStorageClassName }}
           - --real-storage-class-name={{ .Values.storage.realStorageClassName }}

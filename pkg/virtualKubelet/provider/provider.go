@@ -69,6 +69,8 @@ type InitConfig struct {
 	EnableStorage              bool
 	VirtualStorageClassName    string
 	RemoteRealStorageClassName string
+
+	NetworkMode string
 }
 
 // LiqoProvider implements the virtual-kubelet provider interface and stores pods in memory.
@@ -87,13 +89,16 @@ func NewLiqoProvider(ctx context.Context, cfg *InitConfig, eb record.EventBroadc
 	remoteLiqoClient := liqoclient.NewForConfigOrDie(cfg.RemoteConfig)
 	remoteMetricsClient := metrics.NewForConfigOrDie(cfg.RemoteConfig).MetricsV1beta1().PodMetricses
 
-	dialctx, cancel := context.WithTimeout(ctx, 10*time.Second)
-	connection, err := grpc.DialContext(dialctx, cfg.LiqoIpamServer, grpc.WithInsecure(), grpc.WithBlock())
-	cancel()
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to establish a connection to the IPAM")
+	var ipamClient ipam.IpamClient = &identityIPAMClient{}
+	if cfg.NetworkMode == "liqo" {
+		dialctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+		connection, err := grpc.DialContext(dialctx, cfg.LiqoIpamServer, grpc.WithInsecure(), grpc.WithBlock())
+		cancel()
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to establish a connection to the IPAM")
+		}
+		ipamClient = ipam.NewIpamClient(connection)
 	}
-	ipamClient := ipam.NewIpamClient(connection)
 
 	reflectionManager := manager.New(localClient, remoteClient, localLiqoClient, remoteLiqoClient, cfg.InformerResyncPeriod, eb)
 	podreflector := workload.NewPodReflector(cfg.RemoteConfig, remoteMetricsClient, ipamClient, cfg.EnableAPIServerSupport, cfg.PodWorkers)

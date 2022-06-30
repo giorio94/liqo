@@ -15,6 +15,8 @@
 package liqonodeprovider
 
 import (
+	"fmt"
+
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -97,8 +99,12 @@ func nodePIDPressureStatus(pressure bool) func() (corev1.ConditionStatus, string
 }
 
 // nodeNetworkUnavailableStatus returns a function containing the condition information about the networking status.
-func nodeNetworkUnavailableStatus(unavailable bool) func() (corev1.ConditionStatus, string, string) {
+func nodeNetworkUnavailableStatus(networkMode string, unavailable bool) func() (corev1.ConditionStatus, string, string) {
 	return func() (status corev1.ConditionStatus, reason, message string) {
+		if networkMode != "liqo" {
+			return corev1.ConditionFalse, "NetworkManagedExternally", fmt.Sprintf("The inter-cluster interconnection is managed by %v", networkMode)
+		}
+
 		if unavailable {
 			return corev1.ConditionTrue, "LiqoNetworkingDown", "The Liqo cluster interconnection is down"
 		}

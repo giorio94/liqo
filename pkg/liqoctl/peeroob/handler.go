@@ -108,6 +108,8 @@ func (o *Options) enforceForeignCluster(ctx context.Context) (*discoveryv1alpha1
 		if fc.Spec.InsecureSkipTLSVerify == nil {
 			fc.Spec.InsecureSkipTLSVerify = pointer.BoolPtr(true)
 		}
+
+		fc.Spec.NetworkingEnabled = discoveryv1alpha1.NetworkingEnabledNo
 		return nil
 	})
 

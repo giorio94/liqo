@@ -1,4 +1,4 @@
----
+{{- if eq "liqo" .Values.networkConfig.mode }}
 {{- $gatewayConfig := (merge (dict "name" "gateway" "module" "networking") .) -}}
 
 apiVersion: v1
@@ -63,4 +63,5 @@ metadata:
   - securitycontextconstraints
   verbs:
   - use
+{{- end }}
 {{- end }}

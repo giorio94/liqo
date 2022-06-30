@@ -188,13 +188,13 @@ var _ = Describe("Liqo node conditions generation", func() {
 				ExpectedMessage: "The remote cluster is advertising sufficient resources",
 			}),
 			Entry("of the network unavailable condition, when set", StatusGenerationCase{
-				Generator:       nodeNetworkUnavailableStatus(true),
+				Generator:       nodeNetworkUnavailableStatus("liqo", true),
 				ExpectedStatus:  corev1.ConditionTrue,
 				ExpectedReason:  "LiqoNetworkingDown",
 				ExpectedMessage: "The Liqo cluster interconnection is down",
 			}),
 			Entry("of the network unavailable condition, when unset", StatusGenerationCase{
-				Generator:       nodeNetworkUnavailableStatus(false),
+				Generator:       nodeNetworkUnavailableStatus("liqo", false),
 				ExpectedStatus:  corev1.ConditionFalse,
 				ExpectedReason:  "LiqoNetworkingUp",
 				ExpectedMessage: "The Liqo cluster interconnection is established",
