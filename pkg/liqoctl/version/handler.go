@@ -16,11 +16,17 @@ package version
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strings"
+
+	appsv1 "k8s.io/api/apps/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/liqotech/liqo/pkg/liqoctl/factory"
 	"github.com/liqotech/liqo/pkg/liqoctl/install"
 	"github.com/liqotech/liqo/pkg/liqoctl/output"
+	liqolabels "github.com/liqotech/liqo/pkg/utils/labels"
 )
 
 var liqoctlVersion = "unknown"
@@ -64,4 +70,53 @@ func (o *Options) Run(ctx context.Context) error {
 
 	fmt.Printf("Server version: %s\n", version)
 	return nil
+}
+
+func (o *Options) ServerVersionFromHelm(ctx context.Context) (string, error) {
+	release, err := o.HelmClient().GetRelease(install.LiqoReleaseName)
+	if err != nil {
+		return "", err
+	}
+
+	if release.Chart == nil || release.Chart.Metadata == nil {
+		return "", err
+	}
+
+	version := release.Chart.Metadata.AppVersion
+	if version == "" {
+		// Development version, fallback to the value specified as tag
+		tag, ok := release.Config["tag"]
+		if !ok {
+			o.Printer.Error.Println("Invalid release information")
+			return "", err /* TODO: fix */
+		}
+		version = tag.(string)
+	}
+
+	return version, nil
+}
+
+func (o *Options) ServerVersionFromDeployment(ctx context.Context) (string, error) {
+	// Retrieve the liqo controller manager deployment.
+	var deployments appsv1.DeploymentList
+	if err := o.CRClient.List(ctx, &deployments, client.InNamespace(o.LiqoNamespace), client.MatchingLabelsSelector{
+		Selector: liqolabels.ControllerManagerLabelSelector(),
+	}); err != nil || len(deployments.Items) != 1 {
+		return "", errors.New("failed to retrieve the liqo controller manager deployment")
+	}
+
+	dpl := deployments.Items[0]
+	if version := dpl.Labels["app.kubernetes.io/version"]; version != "" {
+		return version, nil
+	}
+
+	for i := range dpl.Spec.Template.Spec.Containers {
+		image := dpl.Spec.Template.Spec.Containers[i].Image
+		tokens := strings.Split(image, ":")
+		if len(tokens) == 2 {
+			return tokens[1], nil
+		}
+	}
+
+	return "", nil
 }
